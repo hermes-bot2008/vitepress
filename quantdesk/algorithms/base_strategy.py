@@ -47,17 +47,36 @@ class Position:
         self.is_open = False
         
         # Calculer le profit
+        # Pour l'or (XAUUSD):
+        #   1 lot = 100 onces
+        #   0.01 lot = 1 once
+        #   1 once qui bouge de $1 = $1 de profit/perte
+        # 
+        # Pour le forex (EURUSD, etc):
+        #   1 lot = 100,000 unités
+        #   0.01 lot = 1,000 unités
+        #   1 pip = 0.0001, 1 pip = $10 pour 1 lot standard
+        
+        # Calcul simplifié: 0.01 lot = 100 unités
+        units = self.lot_size * 10000  # 0.01 * 10000 = 100
+        
         if self.position_type == 'BUY':
-            self.profit = (close_price - self.entry_price) * self.lot_size * 100000
+            price_diff = close_price - self.entry_price
         else:  # SELL
-            self.profit = (self.entry_price - close_price) * self.lot_size * 100000
+            price_diff = self.entry_price - close_price
+        
+        self.profit = price_diff * units
     
     def get_current_profit(self, current_price: float) -> float:
         """Calcule le profit actuel."""
+        units = self.lot_size * 10000
+        
         if self.position_type == 'BUY':
-            return (current_price - self.entry_price) * self.lot_size * 100000
+            price_diff = current_price - self.entry_price
         else:  # SELL
-            return (self.entry_price - current_price) * self.lot_size * 100000
+            price_diff = self.entry_price - current_price
+        
+        return price_diff * units
     
     def to_dict(self) -> Dict:
         """Convertit la position en dictionnaire."""

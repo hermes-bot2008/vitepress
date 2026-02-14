@@ -1,0 +1,2 @@
+ticket,symbol,type,entry_price,lot_size,stop_loss,take_profit,open_time,close_time,close_price,profit,is_open
+1,XAUUSD,SELL,1909.2440604302092,0.01,1909.2740604302091,1909.2240604302092,2024-01-03 19:00:00,2024-01-03 20:00:00,1912.696317594508,-3452.2571642987714,False

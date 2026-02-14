@@ -6,9 +6,14 @@ Chargement de données de marché depuis différentes sources.
 """
 
 import pandas as pd
-import yfinance as yf
 from typing import Optional
 from datetime import datetime, timedelta
+
+try:
+    import yfinance as yf
+    YFINANCE_AVAILABLE = True
+except ImportError:
+    YFINANCE_AVAILABLE = False
 
 
 class DataLoader:
@@ -33,6 +38,9 @@ class DataLoader:
         Returns:
             DataFrame avec colonnes ['open', 'high', 'low', 'close', 'volume']
         """
+        if not YFINANCE_AVAILABLE:
+            raise ImportError("yfinance is not installed. Install it with: pip install yfinance")
+        
         if start_date is None:
             start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
         
@@ -117,18 +125,20 @@ class DataLoader:
         dates = pd.date_range(start=start_date, end=end_date, freq=freq)
         
         # Générer les rendements aléatoires
-        returns = pd.Series(index=dates).apply(lambda x: pd.np.random.normal(0, volatility))
+        import numpy as np
+        returns = pd.Series(index=dates).apply(lambda x: np.random.normal(0, volatility))
         
         # Générer les prix de clôture
         close = initial_price * (1 + returns).cumprod()
         
         # Générer OHLC
-        high = close * (1 + pd.Series(index=dates).apply(lambda x: abs(pd.np.random.normal(0, volatility/2))))
-        low = close * (1 - pd.Series(index=dates).apply(lambda x: abs(pd.np.random.normal(0, volatility/2))))
+        import numpy as np
+        high = close * (1 + pd.Series(index=dates).apply(lambda x: abs(np.random.normal(0, volatility/2))))
+        low = close * (1 - pd.Series(index=dates).apply(lambda x: abs(np.random.normal(0, volatility/2))))
         open_price = close.shift(1).fillna(initial_price)
         
         # Générer le volume
-        volume = pd.Series(index=dates).apply(lambda x: int(pd.np.random.uniform(1000, 10000)))
+        volume = pd.Series(index=dates).apply(lambda x: int(np.random.uniform(1000, 10000)))
         
         # Créer le DataFrame
         data = pd.DataFrame({
